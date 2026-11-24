@@ -1,8 +1,8 @@
 # Bibi
 
 Bibi is a Windows desktop helper for monitoring a BlueStacks window and solving
-Water Sort puzzles. It only observes the emulator and displays suggested moves;
-it does not click or control apps inside BlueStacks.
+Water Sort puzzles. It can optionally click the moves from a solution entered
+by the user.
 
 ## Requirements
 
@@ -38,9 +38,41 @@ Bibi reports the first number recognized in the selected region and its change
 since the previous capture. OCR accuracy depends on the selected region,
 emulator scaling, and Tesseract installation.
 
-## Water Sort suggestions
+## Water Sort auto-recognition and auto-click
+
+Open an active Water Sort level in BlueStacks and select its window in Bibi.
+Press **Tự nhận diện & tính** to capture the board, detect tube positions and
+sample the four color slots in each tube. Bibi only continues when the state
+validates as a Water Sort puzzle (four slots per color and at least one empty
+slot). It displays the detected state and proposed moves; confirm the prompt
+before Bibi clicks. Immediately before clicking, Bibi captures the board again
+and aborts if the detected state or tube positions changed.
+
+Automatic detection expects the light blue/lavender board and outlined tube
+mouths shown in the sample screenshots. Keep the active board visible and
+unobstructed; Bibi does not navigate game menus or press in-game Start/Play
+buttons. If detection fails, use the manual solver below.
 
 Enter one tube per line, writing its contents from bottom to top with one letter
 per color. Each color must occur exactly four times; use `-` for an empty tube.
-Press **Tìm lời giải** to get suggested pours. The solver does not perform those
-moves automatically.
+Press **Tìm lời giải** to get suggested pours. To execute a manually entered
+solution, enter the center coordinates of every tube, in row order from top to
+bottom and left to right, relative to the selected BlueStacks window (for
+example, `100,300; 180,300; 260,300; 340,300`), then press **Tự bấm lời giải**
+and confirm. Use **Dừng tự bấm** to stop execution.
+
+Coordinates must match the current window size and tube layout. The auto-click
+feature uses PyAutoGUI's corner failsafe; moving the mouse to the screen's
+top-left corner aborts clicking.
+
+## Automatic updates
+
+The packaged Windows app checks GitHub Releases at startup. When it finds a
+newer release, it downloads `Bibi-Setup.exe`, verifies the SHA-256 digest
+published by GitHub, runs the installer silently, and restarts Bibi. The
+**Kiểm tra cập nhật** button can also be used to check manually.
+
+To publish an update, set the same `x.y.z` version in `version.py` and
+`installer.iss`, then push a matching `vX.Y.Z` tag. The Windows workflow builds
+the installer and publishes it as a GitHub Release asset. Pushing to `main`
+continues to build workflow artifacts but does not publish an update.
