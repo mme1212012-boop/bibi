@@ -92,3 +92,21 @@ To publish an update, set the same `x.y.z` version in `version.py` and
 `installer.iss`, then push a matching `vX.Y.Z` tag. The Windows workflow builds
 the installer and publishes it as a GitHub Release asset. Pushing to `main`
 continues to build workflow artifacts but does not publish an update.
+
+## Android APK
+
+The `android/` directory contains a native Android project for
+MediaProjection capture, guidance overlays, and optional Accessibility gestures.
+It is intended for BlueStacks and compatible Android devices.
+
+GitHub Actions builds `app-debug.apk` on pushes to `main`. For a local build,
+copy `android/local.properties.example` to `android/local.properties`, set
+`sdk.dir`, and run:
+
+```bash
+cd android
+./gradlew assembleDebug
+```
+
+The app requests screen-capture and overlay permissions before previewing
+guidance. Accessibility gestures require a separate, explicit setting.
