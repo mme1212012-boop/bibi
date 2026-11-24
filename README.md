@@ -16,6 +16,9 @@ Install Python 3.10 or later and Inno Setup 6, then double-click
 `build_setup.bat`. It packages the app and creates `dist\Bibi-Setup.exe`.
 Tesseract OCR must also be installed on the target PC and available on `PATH`.
 
+To download the latest published installer, use
+[Bibi-Setup.exe](https://github.com/mme1212012-boop/bibi/releases/latest/download/Bibi-Setup.exe).
+
 ### Run from source
 
 Install Python dependencies and start Bibi:
@@ -37,6 +40,19 @@ py bibi.py
 Bibi reports the first number recognized in the selected region and its change
 since the previous capture. OCR accuracy depends on the selected region,
 emulator scaling, and Tesseract installation.
+
+## Live Water Sort guidance
+
+Press **Tự xem & chỉ dẫn** without selecting a window. Bibi opens fullscreen
+and captures the primary screen about every 0.6 seconds, recognizes the board,
+solves the current state, and highlights the next pour on the preview:
+
+- a **red** ring marks the source tube;
+- a **green** ring marks the destination tube;
+- a yellow arrow and text show the color, amount, and tube numbers.
+
+The guidance updates automatically after the board changes. Press **Dừng**
+to stop live viewing. Live mode is guidance only and never clicks the game.
 
 ## Water Sort auto-recognition and auto-click
 

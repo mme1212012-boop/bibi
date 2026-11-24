@@ -18,6 +18,10 @@ RELEASE_API_URL = (
     f"https://api.github.com/repos/{REPOSITORY_OWNER}/{REPOSITORY_NAME}/releases/latest"
 )
 INSTALLER_NAME = "Bibi-Setup.exe"
+INSTALLER_DOWNLOAD_URL = (
+    f"https://github.com/{REPOSITORY_OWNER}/{REPOSITORY_NAME}"
+    f"/releases/latest/download/{INSTALLER_NAME}"
+)
 MAX_INSTALLER_SIZE = 500 * 1024 * 1024
 _VERSION_PATTERN = re.compile(r"^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 _DIGEST_PATTERN = re.compile(r"^sha256:([0-9a-fA-F]{64})$")

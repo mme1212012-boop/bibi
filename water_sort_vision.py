@@ -4,6 +4,9 @@ import colorsys
 import math
 from typing import Protocol
 
+from PIL import Image, ImageDraw
+from water_sort import Move
+
 
 class RGBImage(Protocol):
     size: tuple[int, int]
@@ -261,3 +264,71 @@ def detect_water_sort_board(image: RGBImage) -> tuple[
         positions.append((mouth_x * scale, click_y * scale))
 
     return tuple(tubes), tuple(positions)
+
+
+def annotate_water_sort_guidance(
+    image: Image.Image,
+    positions: tuple[tuple[int, int], ...],
+    move: Move | None,
+) -> Image.Image:
+    annotated = image.copy()
+    draw = ImageDraw.Draw(annotated)
+    if move is None:
+        return annotated
+    source_index = move.source - 1
+    target_index = move.target - 1
+    if not (0 <= source_index < len(positions) and 0 <= target_index < len(positions)):
+        return annotated
+
+    source_x, source_y = positions[source_index]
+    target_x, target_y = positions[target_index]
+    radius = max(18, round(min(image.size) * 0.025))
+
+    draw.ellipse(
+        (source_x - radius, source_y - radius, source_x + radius, source_y + radius),
+        fill=(255, 45, 45),
+        outline=(255, 45, 45),
+        width=max(4, round(radius * 0.18)),
+    )
+    draw.ellipse(
+        (target_x - radius, target_y - radius, target_x + radius, target_y + radius),
+        fill=(45, 220, 90),
+        outline=(45, 220, 90),
+        width=max(4, round(radius * 0.18)),
+    )
+
+    dx = target_x - source_x
+    dy = target_y - source_y
+    length = max(1, math.hypot(dx, dy))
+    start_x = round(source_x + dx / length * radius)
+    start_y = round(source_y + dy / length * radius)
+    end_x = round(target_x - dx / length * radius)
+    end_y = round(target_y - dy / length * radius)
+    draw.line((start_x, start_y, end_x, end_y), fill=(255, 214, 0), width=max(5, round(radius * 0.24)))
+
+    arrow_size = max(8, round(radius * 0.55))
+    ux = dx / length
+    uy = dy / length
+    px = -uy
+    py = ux
+    arrow_tip = (end_x, end_y)
+    arrow_left = (round(end_x - ux * arrow_size + px * arrow_size * 0.55),
+                  round(end_y - uy * arrow_size + py * arrow_size * 0.55))
+    arrow_right = (round(end_x - ux * arrow_size - px * arrow_size * 0.55),
+                   round(end_y - uy * arrow_size - py * arrow_size * 0.55))
+    draw.polygon((arrow_tip, arrow_left, arrow_right), fill=(255, 214, 0))
+
+    label = f"ĐỔ {move.amount} {move.color}: {move.source} -> {move.target}"
+    box_x = max(4, min(source_x, target_x) - radius)
+    box_y = max(4, min(source_y, target_y) - radius * 2)
+    text_box = draw.textbbox((0, 0), label)
+    text_width = text_box[2] - text_box[0]
+    text_height = text_box[3] - text_box[1]
+    draw.rectangle(
+        (box_x, box_y, box_x + text_width + 16, box_y + text_height + 12),
+        fill=(20, 24, 36),
+        outline=(255, 214, 0),
+        width=2,
+    )
+    draw.text((box_x + 8, box_y + 5), label, fill=(255, 255, 255))
+    return annotated

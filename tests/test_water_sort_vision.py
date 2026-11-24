@@ -3,7 +3,12 @@ import unittest
 from PIL import Image, ImageDraw
 
 from water_sort import parse_tubes
-from water_sort_vision import BoardDetectionError, detect_water_sort_board
+from water_sort import Move
+from water_sort_vision import (
+    BoardDetectionError,
+    annotate_water_sort_guidance,
+    detect_water_sort_board,
+)
 
 
 def _sample_board() -> Image.Image:
@@ -105,6 +110,20 @@ class WaterSortVisionTests(unittest.TestCase):
 
         with self.assertRaises(BoardDetectionError):
             detect_water_sort_board(image)
+
+    def test_guidance_overlay_marks_source_red_and_target_green(self):
+        image = Image.new("RGB", (360, 318), (0, 0, 0))
+        positions = ((80, 100), (180, 100))
+
+        annotated = annotate_water_sort_guidance(
+            image,
+            positions,
+            Move(source=1, target=2, color="A", amount=2),
+        )
+
+        self.assertEqual(annotated.size, image.size)
+        self.assertEqual(annotated.getpixel((80, 100)), (255, 45, 45))
+        self.assertEqual(annotated.getpixel((180, 100)), (45, 220, 90))
 
 
 if __name__ == "__main__":

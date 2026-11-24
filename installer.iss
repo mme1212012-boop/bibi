@@ -1,5 +1,5 @@
 #define AppName "Bibi"
-#define AppVersion "1.0.0"
+#define AppVersion "1.0.1"
 #define AppPublisher "Bibi"
 #define AppExeName "Bibi.exe"
 
